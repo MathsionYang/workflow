@@ -1,0 +1,43 @@
+name: Update Time Every 5 Minutes
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up C++ environment
+      uses: actions/setup-cpp@v1
+      with:
+        compiler: gcc
+        
+    - name: Compile C++ program
+      run: |
+        g++ -o write_time write_time.cpp -std=c++11
+        
+    - name: Run program to write time
+      run: |
+        ./write_time
+        
+    - name: Configure Git user
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+    - name: Commit and push changes
+      run: |
+        git add timestamp.txt
+        git diff --staged --quiet || git commit -m "Auto update: Add timestamp $(date +'%Y-%m-%d %H:%M:%S')"
+        git push
