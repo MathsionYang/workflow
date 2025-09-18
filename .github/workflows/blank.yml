@@ -18,17 +18,12 @@ jobs:
       with:
         token: ${{ secrets.MYTOKEN }}
         
-    - name: Set up C++ environment
-      uses: actions/setup-cpp@v1
-      with:
-        compiler: gcc
-        
-    - name: Compile C++ program
+    - name: Compile and run C++ program
       run: |
+        # 编译程序
         g++ -o write_time write_time.cpp -std=c++11
         
-    - name: Run program to write time
-      run: |
+        # 运行程序
         ./write_time
         
     - name: Configure Git user
